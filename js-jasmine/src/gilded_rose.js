@@ -1,62 +1,52 @@
 class Item {
-  constructor(name, sellIn, quality){
+  constructor(name, sellIn, quality) {
     this.name = name;
     this.sellIn = sellIn;
     this.quality = quality;
   }
 }
-
 class Shop {
-  constructor(items=[]){
+  constructor(items = []) {
     this.items = items;
   }
   updateQuality() {
-    for (var i = 0; i < this.items.length; i++) {
-      if (this.items[i].name != 'Aged Brie' && this.items[i].name != 'Backstage passes to a TAFKAL80ETC concert') {
-        if (this.items[i].quality > 0) {
-          if (this.items[i].name != 'Sulfuras, Hand of Ragnaros') {
-            this.items[i].quality = this.items[i].quality - 1;
-          }
-        }
-      } else {
-        if (this.items[i].quality < 50) {
-          this.items[i].quality = this.items[i].quality + 1;
-          if (this.items[i].name == 'Backstage passes to a TAFKAL80ETC concert') {
-            if (this.items[i].sellIn < 11) {
-              if (this.items[i].quality < 50) {
-                this.items[i].quality = this.items[i].quality + 1;
-              }
-            }
-            if (this.items[i].sellIn < 6) {
-              if (this.items[i].quality < 50) {
-                this.items[i].quality = this.items[i].quality + 1;
-              }
-            }
-          }
-        }
+    this.items.forEach(item => {
+      let expDate = item.sellIn > 0;
+      // and this function ONLY FOR NOT LEGENDARY ITEMS
+      const notLegendary = (a) => {
+        item.sellIn--
+        if (a.quality < 0) (a.quality = 0); 
+        if (a.quality > 50) (a.quality = 50);
+        return a;
+      };
+      switch (item.name) {
+        case 'Aged Brie':
+          (expDate) ? item.quality++ : item.quality += 2;
+          notLegendary(item);
+          break;
+        case 'Sulfuras, Hand of Ragnaros':
+          break;
+        case 'Backstage passes to a TAFKAL80ETC concert':
+          if (item.sellIn > 11) {
+            item.quality++ 
+          } else if (item.sellIn <= 11 && item.sellIn > 6) {
+            item.quality += 2
+          } else if (item.sellIn <= 6 && item.sellIn >= 1) { 
+            item.quality += 3
+          } else (item.quality = 0)
+          notLegendary(item);
+          break;
+        case 'Conjured Mana Cake':
+          (expDate) ? item.quality -= 2 : item.quality -= 4;
+          notLegendary(item);
+          break;
+        // ADD NEW CASES HERE
+        default:
+          (expDate) ? item.quality-- : item.quality -= 2;
+          notLegendary(item);
+          break;
       }
-      if (this.items[i].name != 'Sulfuras, Hand of Ragnaros') {
-        this.items[i].sellIn = this.items[i].sellIn - 1;
-      }
-      if (this.items[i].sellIn < 0) {
-        if (this.items[i].name != 'Aged Brie') {
-          if (this.items[i].name != 'Backstage passes to a TAFKAL80ETC concert') {
-            if (this.items[i].quality > 0) {
-              if (this.items[i].name != 'Sulfuras, Hand of Ragnaros') {
-                this.items[i].quality = this.items[i].quality - 1;
-              }
-            }
-          } else {
-            this.items[i].quality = this.items[i].quality - this.items[i].quality;
-          }
-        } else {
-          if (this.items[i].quality < 50) {
-            this.items[i].quality = this.items[i].quality + 1;
-          }
-        }
-      }
-    }
-
+    })
     return this.items;
   }
 }
